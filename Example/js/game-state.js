@@ -111,6 +111,11 @@ define(function() {
                     this.ground = game.add.tileSprite(0,game.height-224,game.width,224,'ground'); //ground放在pipeGroup后面定义，这样地面可以覆盖管道
                     this.ground.tileScale.setTo(2,2);
 
+                    //this.testText = game.add.text(game.width/2,game.height/2,'game.width/2');
+                    //console.log("game.width:" +　game.width/2);
+
+                    //this.testText = game.add.text(375,game.height/2,'375');
+
                     this.scoreText = game.add.text(game.world.centerX-20, 30, '0');  //跟上面同理\
                     this.scoreText.fontSize = 72;
 
@@ -136,7 +141,7 @@ define(function() {
                     this.readyText.width*=2;
                     this.readyText.height*=2;
 
-                    this.playTip = game.add.image(game.width/2,900,'play_tip'); //提示点击屏幕的图片
+                    this.playTip = game.add.image(game.width/2,game.height/2,'play_tip'); //提示点击屏幕的图片
                     this.playTip.width*=2;
                     this.playTip.height*=2;
                     
@@ -291,27 +296,55 @@ define(function() {
 
                 this.scoreGroup = this.add.group();   //创建一个组存放得分面板内容
 
-                var gameOverText = this.scoreGroup.create(game.width/2,40,'game_over');  //GameOver文字
-                gameOverText.anchor.setTo(0.5,0);
+               
 
-                var scoreBoard = this.scoreGroup.create(game.width/2,115,'score_board'); //得分面板
+
+                var scoreBoard = this.scoreGroup.create(game.width/2,game.height/3.3,'score_board'); //得分面板
                 scoreBoard.anchor.setTo(0.5,0);
+                scoreBoard.width *=2;
+                scoreBoard.height *=2;
 
-                var currentScoreText = this.add.text(game.width/2+60,145,this.score+'', 20 , this.scoreGroup );  //显示本次分数
-                var bestScoreText = this.add.text(game.width/2+65,195,game.bestScore+'', 20 , this.scoreGroup ); //显示最高分数
+                var gameOverText = this.scoreGroup.create(game.width/2,scoreBoard.y -120,'game_over');  //GameOver文字
+                gameOverText.anchor.setTo(0.5,0);
+                gameOverText.width*=2;
+                gameOverText.height*=2;
 
-                var returnBtn = this.add.button(game.width/2,253,'btn',function(){  //加入按钮，按后重新调用play场景
-                    game.state.start('play');},
-                    this,this.scoreGroup);
+                var currentScoreText = this.add.text(scoreBoard.x+155,scoreBoard.y+55,this.score+'', 20 , this.scoreGroup );  //显示本次分数
+                currentScoreText.fontSize =65;
+                var bestScoreText = this.add.text(scoreBoard.x+155,scoreBoard.y+145,game.bestScore+'', 20 , this.scoreGroup ); //显示最高分数
+                bestScoreText.fontSize =65;
+                var returnBtn = this.add.image(game.width/2,scoreBoard.y+200,'btn');
                 returnBtn.anchor.setTo(0.5,0);
+                returnBtn.width *=2;
+                returnBtn.height *=2;
+
+                game.input.onTap.add(function(e){
+                    //console.log('x:'+e.x +',y:'+e.y);
+                    //console.log(returnBtn.x + ',' +returnBtn.width);
+                    //console.log(returnBtn.y + ',' +returnBtn.height);
+                    if( (e.x*2<returnBtn.x+returnBtn.width/2) && (e.x*2>returnBtn.x-returnBtn.width/2) && (e.y*2<returnBtn.y+returnBtn.height*2) && (e.y*2>returnBtn.y) )
+                    {
+                        console.log('restart');
+                        game.state.start('play');              
+                    }
+                }
+                , this.scoreGroup);
 
                 currentScoreText.anchor.setTo(0.5,0);
                 bestScoreText.anchor.setTo(0.5,0);
 
                 if(this.score > 5 && this.score <=10)
-                    var silverMedal = this.add.sprite(game.width/2-88, 158, 'medals', 0, this.scoreGroup); //显示银牌
+                    {
+                        var silverMedal = this.add.sprite(scoreBoard.x -177, scoreBoard.y+87, 'medals', 0, this.scoreGroup); //显示银牌
+                        silverMedal.width *=2;
+                        silverMedal.height *=2;
+                    }
                 else if(this.score >10)
-                    var goldMedal = this.add.sprite(game.width/2-88, 158, 'medals', 1, this.scoreGroup); //显示金牌
+                    {
+                        var goldMedal = this.add.sprite(scoreBoard.x -177, scoreBoard.y+87, 'medals', 1, this.scoreGroup); //显示金牌
+                        goldMedal.width *=2;
+                        goldMedal.height *=2;
+                    }
                 else
                     ;    //展示得分榜
             }
