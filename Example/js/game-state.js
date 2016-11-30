@@ -184,7 +184,7 @@ define(function() {
                 this.score = 0;              //初始化得分为0
                 //.bg.autoScroll(-(this.gameSpeed/10),0);   //背景开始向左移动，速度为gameSpeed的十分之一
                 this.ground.autoScroll(-(this.gameSpeed),0);  //地面开始向左移动，速度为gameSpeed
-                this.bird.body.gravity.y = 1200;   //给小鸟施加重力，让小鸟向下掉
+                this.bird.body.gravity.y = 1400;   //给小鸟施加重力，让小鸟向下掉
                 this.readyText.destroy();  //去掉ready文字
                 this.playTip.destroy();    //去掉Tip图片
                 game.input.onDown.add(this.fly,this);   //点击屏幕后，调用fly函数
@@ -192,7 +192,7 @@ define(function() {
             }
 
             this.fly = function(){  //小鸟飞翔函数
-                this.bird.body.velocity.y = -520;   //让小鸟有一个向上的速度，即向上飞一段距离
+                this.bird.body.velocity.y = -550;   //让小鸟有一个向上的速度，即向上飞一段距离
                 game.add.tween(this.bird).to({angle:-30},100,null,true,0,0,false);  //给小鸟施加向上30度的动画，即让小鸟抬头
                 this.soundFly.play(); //播放飞的声音
             }
