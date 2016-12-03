@@ -14,4 +14,9 @@
                         this.myplane.body.velocity.x = 0;
                     }, this);
 代替。
+（以解决以上问题，在update中使用：
+this.myplane.x = game.input.x*2;
+this.myplane.y = game.input.y*2;
+即可让飞机跟着指针移动）
+
 网上素材无音乐

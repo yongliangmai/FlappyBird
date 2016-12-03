@@ -251,6 +251,7 @@ define(function() {
                     this.awardMaxWidth = game.width - game.cache.getImage('award').width;
                     game.time.events.loop(Phaser.Timer.SECOND * 30, this.generateAward, this);
                     
+                    /*
                     game.input.onDown.add(function(e) {
                         if (e.x < game.width / 4)
                             this.myplane.body.velocity.x = -400;
@@ -261,6 +262,7 @@ define(function() {
                     game.input.onUp.add(function() {
                         this.myplane.body.velocity.x = 0;
                     }, this);
+                    */
 
                     var style = {
                         font: "16px Arial",
@@ -451,6 +453,9 @@ define(function() {
 
                         game.physics.arcade.overlap(this.awards, this.myplane, this.getAward, null, this);
                     }
+
+                    this.myplane.x = game.input.x*2;
+                    this.myplane.y = game.input.y*2;
 
                     /*
                     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
