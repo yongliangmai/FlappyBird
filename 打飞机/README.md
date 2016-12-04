@@ -18,5 +18,38 @@
 this.myplane.x = game.input.x*2;
 this.myplane.y = game.input.y*2;
 即可让飞机跟着指针移动）
+——————————————————————————————————————————————————————————————————————
+上面方法也有缺陷：指针在边边时飞机会抖动和闪
+解决方法：
+					if (game.input.x * 2 < this.myplane.width / 2) { //如果指针位置距离屏幕左边太近，则默认去到最左边
+                        this.myplane.x = this.myplane.width / 2
+                    } else if (game.input.x * 2 > game.width - this.myplane.width / 2) { //同上，这次是右边
+                        this.myplane.x = game.width - this.myplane.width / 2;
+                    } else {
+                        this.myplane.x = game.input.x * 2;
+                    }
 
-网上素材无音乐
+                    if (game.input.y * 2 < this.myplane.height / 2) { //如果指针位置距离屏幕上方太近，则默认去到最上方
+                        this.myplane.y = this.myplane.height / 2
+                    } else if (game.input.y * 2 > game.height - this.myplane.height / 2) { //同上，这次是右边
+                        this.myplane.y = game.height - this.myplane.height / 2;
+                    } else {
+                        this.myplane.y = game.input.y * 2;
+                    }
+
+——————————————————————————————————————————————————————————————————————————————————
+1）解决了以上缺陷：
+增加一个前提：
+				this.checkInputIsOnPlane = function() {
+                    if ((game.input.x * 2 <= this.myplane.body.x + this.myplane.body.width * 2) && (game.input.x * 2 >= this.myplane.body.x - this.myplane.body.width * 2) &&
+                        (game.input.y * 2 <= this.myplane.body.y + this.myplane.body.height * 2) && (game.input.y * 2 >= this.myplane.body.y - this.myplane.body.height * 2)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+2）让飞机处于点击位置前方，这样可以在操控飞机时看到飞机，便于躲避子弹，增强了游戏的可操控性。
+3）改变了生成敌人的时间间隔，随时间增加，敌人生成间隔会减少，直到一个最小值，增强了游戏的可玩性。
+
+网上素材音乐无法获取

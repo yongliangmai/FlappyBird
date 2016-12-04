@@ -22,9 +22,10 @@ define(function() {
             var game = this.game;
             game.States = {};
 
-            var score = 0;
+            var score = 0;                              
 
             function Enemy(config) {
+                this.timerForBarriers;
                 this.init = function() {
                     this.enemys = game.add.group();
                     this.enemys.enableBody = true;
@@ -37,17 +38,20 @@ define(function() {
                     this.enemyBullets.createMultiple(config.bulletsPool, config.bulletPic);
                     this.enemyBullets.setAll('outOfBoundsKill', true);
                     this.enemyBullets.setAll('checkWorldBounds', true);
+                    this.maxWidth = game.width - game.cache.getImage(config.selfPic).width;  
 
-                    this.maxWidth = game.width - game.cache.getImage(config.selfPic).width;
-
-                    game.time.events.loop(Phaser.Timer.SECOND * config.selfTimeInterval, this.generateEnemy, this);
+                    //this.generateEnemyTime = config.selfTimeInterval - game.time.totalElapsedSeconds() * 0.3;
+                    //console.log(config.selfPic + ' ' + this.generateEnemyTime);
+                    this.timerForBarriers = game.time.events.loop(Phaser.Timer.SECOND * config.selfTimeInterval, this.generateEnemy, this);                    
 
                     this.explosions = game.add.group();
                     this.explosions.createMultiple(config.explosionPool, config.explosionPic);
                     this.explosions.forEach(function(explosion) {
                         explosion.animations.add(config.explosionPic);
                     }, this);
-                }
+                }                
+
+                this.barriers = config.selfTimeInterval*Phaser.Timer.SECOND;
 
                 this.generateEnemy = function() {
                     var e = this.enemys.getFirstExists(false);
@@ -56,8 +60,16 @@ define(function() {
                         e.width = game.cache.getImage(config.selfPic).width * 2;
                         e.height = game.cache.getImage(config.selfPic).height * 2;
                         e.life = config.life;
-                        e.body.velocity.y = config.velocity;
+                        e.body.velocity.y = config.velocity;                        
                     }
+                    //改变生成敌人时间间隔
+                    if (this.barriers >= config.selfTimeInterval * Phaser.Timer.SECOND * 0.25)
+                        this.barriers = (config.selfTimeInterval - game.time.totalElapsedSeconds()*0.02)*Phaser.Timer.SECOND;
+
+                    console.log(config.selfPic + ': ' + this.barriers);
+                    //console.log(game.time.totalElapsedSeconds());
+                    this.timerForBarriers.delay = this.barriers;
+
                 }
 
                 this.enemyFire = function() {
@@ -85,7 +97,7 @@ define(function() {
                         self.score
                         score += config.score;
                         self.score = score;
-                        console.log(config.score);
+                        //console.log(config.score);
                         config.game.updateText();
                     }
                 };
@@ -135,20 +147,20 @@ define(function() {
                     game.load.spritesheet('explode3', 'http://game.webxinxin.com/plane/assets/explode3.png', 50, 50, 3);
                     game.load.spritesheet('myexplode', 'http://game.webxinxin.com/plane/assets/myexplode.png', 40, 40, 3);
                     game.load.image('award', 'http://game.webxinxin.com/plane/assets/award.png');
-                    game.load.audio('normalback', 'assets/normalback.mp3');
-                    game.load.audio('playback', 'assets/playback.mp3');
-                    game.load.audio('fashe', 'assets/fashe.mp3');
-                    game.load.audio('crash1', 'assets/crash1.mp3');
-                    game.load.audio('crash2', 'assets/crash2.mp3');
-                    game.load.audio('crash3', 'assets/crash3.mp3');
-                    game.load.audio('ao', 'assets/ao.mp3');
-                    game.load.audio('pi', 'assets/pi.mp3');
-                    game.load.audio('deng', 'assets/deng.mp3');
+                    game.load.audio('normalback', 'http://game.webxinxin.com/plane/assets/normalback.mp3');
+                    game.load.audio('playback', 'http://game.webxinxin.com/plane/assets/playback.mp3');
+                    game.load.audio('fashe', 'http://game.webxinxin.com/plane/assets/fashe.mp3');
+                    game.load.audio('crash1', 'http://game.webxinxin.com/plane/assets/crash1.mp3');
+                    game.load.audio('crash2', 'http://game.webxinxin.com/plane/assets/crash2.mp3');
+                    game.load.audio('crash3', 'http://game.webxinxin.com/plane/assets/crash3.mp3');
+                    game.load.audio('ao', 'http://game.webxinxin.com/plane/assets/ao.mp3');
+                    game.load.audio('pi', 'http://game.webxinxin.com/plane/assets/pi.mp3');
+                    game.load.audio('deng', 'http://game.webxinxin.com/plane/assets/deng.mp3');
                     //加载音效
-                    game.load.audio('bg', "assets/audio/bg.mp3");
+                    game.load.audio('bg', "http://game.webxinxin.com/plane/assets/audio/bg.mp3");
                     // 安卓只能同时播放一个音乐
                     if (self.gameManager.device.platform != 'android') {
-                        game.load.audio('input', "assets/audio/tap.mp3");
+                        game.load.audio('input', "http://game.webxinxin.com/plane/assets/audio/tap.mp3");
                     }
                 };
             };
@@ -240,8 +252,8 @@ define(function() {
                     this.bulletTime = 0;
 
                     this.myplane.inputEnabled = true;
-                    this.myplane.input.enableDrag(false);
-                    console.log("enableDrag");
+                    //this.myplane.input.enableDrag(false);
+                    
 
                     this.awards = game.add.group();
                     this.awards.enableBody = true;
@@ -250,7 +262,7 @@ define(function() {
                     this.awards.setAll('checkWorldBounds', true);
                     this.awardMaxWidth = game.width - game.cache.getImage('award').width;
                     game.time.events.loop(Phaser.Timer.SECOND * 30, this.generateAward, this);
-                    
+
                     /*
                     game.input.onDown.add(function(e) {
                         if (e.x < game.width / 4)
@@ -331,7 +343,7 @@ define(function() {
                     }
 
                     this.enemy1 = new Enemy(enemyTeam.enemy1);
-                    this.enemy1.init();
+                    this.enemy1.init();                    
                     this.enemy2 = new Enemy(enemyTeam.enemy2);
                     this.enemy2.init();
                     this.enemy3 = new Enemy(enemyTeam.enemy3);
@@ -430,7 +442,14 @@ define(function() {
                     game.state.start('end');
                 };
 
-
+                this.checkInputIsOnPlane = function() {
+                    if ((game.input.x * 2 <= this.myplane.body.x + this.myplane.body.width * 2) && (game.input.x * 2 >= this.myplane.body.x - this.myplane.body.width * 2) &&
+                        (game.input.y * 2 <= this.myplane.body.y + this.myplane.body.height * 2) && (game.input.y * 2 >= this.myplane.body.y - this.myplane.body.height * 2)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
 
                 this.update = function() {
                     if (this.myStartFire) {
@@ -440,8 +459,8 @@ define(function() {
                         this.enemy3.enemyFire();
 
                         game.physics.arcade.overlap(this.mybullets, this.enemy1.enemys, this.enemy1.hitEnemy, null, this.enemy1);
-                        game.physics.arcade.overlap(this.mybullets, this.enemy2.enemys, this.enemy2.hitEnemy, null, this.enemy1);
-                        game.physics.arcade.overlap(this.mybullets, this.enemy3.enemys, this.enemy3.hitEnemy, null, this.enemy1);
+                        game.physics.arcade.overlap(this.mybullets, this.enemy2.enemys, this.enemy2.hitEnemy, null, this.enemy2);
+                        game.physics.arcade.overlap(this.mybullets, this.enemy3.enemys, this.enemy3.hitEnemy, null, this.enemy3);
 
                         game.physics.arcade.overlap(this.myplane, this.enemy1.enemyBullets, this.hitMyplane, null, this);
                         game.physics.arcade.overlap(this.myplane, this.enemy2.enemyBullets, this.hitMyplane, null, this);
@@ -454,9 +473,26 @@ define(function() {
                         game.physics.arcade.overlap(this.awards, this.myplane, this.getAward, null, this);
                     }
 
-                    this.myplane.x = game.input.x*2;
-                    this.myplane.y = game.input.y*2;
+                    //this.myplane.x = game.input.x * 2;
+                    //this.myplane.y = game.input.y * 2;
 
+                    if (this.checkInputIsOnPlane()) {
+                        if (game.input.x * 2 < this.myplane.width / 2) { //如果指针位置距离屏幕左边太近，则默认去到最左边
+                            this.myplane.x = this.myplane.width / 2
+                        } else if (game.input.x * 2 > game.width - this.myplane.width / 2) { //同上，这次是右边
+                            this.myplane.x = game.width - this.myplane.width / 2;
+                        } else {
+                            this.myplane.x = game.input.x * 2;
+                        }
+
+                        if (game.input.y * 2 < this.myplane.height / 2) { //如果指针位置距离屏幕上方太近，则默认去到最上方
+                            this.myplane.y = this.myplane.height / 2
+                        } else if (game.input.y * 2 > game.height) { //同上，这次是下方
+                            this.myplane.y = game.height - this.myplane.height / 2;
+                        } else {
+                            this.myplane.y = game.input.y * 2 - this.myplane.width/2;
+                        }
+                    }
                     /*
                     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
                         this.myplane.body.velocity.x = -400;                        
